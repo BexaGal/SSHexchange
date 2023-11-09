@@ -1,0 +1,17 @@
+---
+- name: "Create test users"
+  become: true
+  hosts: brest_nodes
+  tasks:
+    - name: "Create user \"test\""
+      ansible.builtin.user:
+        name: "test"
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        shell: /bin/bash
+    - name: "Confirm user creation"
+      ansible.builtin.shell: "cat /etc/passwd | grep test"
+      register: if_user_created
+    - name: "Print out user info"
+      ansible.builtin.debug:
+        msg: "{{  if_user_created  }}"

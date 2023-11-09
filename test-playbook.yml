@@ -1,0 +1,8 @@
+---
+- name: "Update apt"
+  hosts: brest_nodes
+  become: true
+  tasks:
+    - name: "Update apt data"
+      ansible.builtin.apt:
+        update_cache: true

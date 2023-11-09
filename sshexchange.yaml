@@ -1,0 +1,23 @@
+---
+- name: "Extract SSH keys"
+  hosts: brest_nodes
+  become: true
+  tasks:
+    - name: "Fetch public keys"
+      ansible.builtin.shell: "cat /home/test/.ssh/id_rsa.pub"
+      register: ssh_keys
+    - name: "DEBUG: print SSH keys"
+      ansible.builtin.debug:
+        msg: "SSH_keys: '{{  ssh_keys.stdout }}'"
+
+- name: "Install SSH keys to hosts"
+  hosts: brest_nodes
+  become: true
+  gather_facts: false
+  tasks:
+    - name: "Install SSH Public keys to known_hosts"
+      ansible.builtin.lineinfile:
+        path: /home/bexa/.ssh/authorized_keys
+        line: "{{  (hostvars[item].ssh_keys).stdout  }}"
+        state: present
+      with_items: "{{ groups['brest_nodes'] }}"
